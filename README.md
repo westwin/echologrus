@@ -1,11 +1,12 @@
 # echologrus
+
 echo logrus middleware
 
 ## Usage
 
 ```go
 import (
-	  "github.com/westwin/echologrus"
+    "github.com/westwin/echologrus"
   	"github.com/sirupsen/logrus"
 )
 
