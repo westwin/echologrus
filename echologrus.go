@@ -102,7 +102,7 @@ func (l Logger) Panicj(j log.JSON) {
 	l.Logger.WithFields(logrus.Fields(j)).Panic()
 }
 
-func logrusMiddlewareHandler(l Logger, c echo.Context, next echo.HandlerFunc) error {
+func (l Logger) logrusMiddlewareHandler(c echo.Context, next echo.HandlerFunc) error {
 	req := c.Request()
 	res := c.Response()
 	start := time.Now()
@@ -136,7 +136,7 @@ func logrusMiddlewareHandler(l Logger, c echo.Context, next echo.HandlerFunc) er
 
 func (l Logger) logger(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return logrusMiddlewareHandler(l, c, next)
+		return l.logrusMiddlewareHandler(c, next)
 	}
 }
 
