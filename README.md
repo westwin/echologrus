@@ -11,6 +11,7 @@ import (
 )
 
 e := echo.New()
-e.Logger = echologrus.Logger{Logger: logrus.StandardLogger()}
-e.Use(echologrus.Hook())
+el := echologrus.Logger{Logger: logrus.StandardLogger()}
+e.Logger = el
+e.Use(el.Hook())
 ```

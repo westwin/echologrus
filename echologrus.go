@@ -45,13 +45,13 @@ func (l Logger) Prefix() string { return "" }
 func (l Logger) SetLevel(lvl log.Lvl) {
 	switch lvl {
 	case log.DEBUG:
-		logrus.SetLevel(logrus.DebugLevel)
+		l.Logger.SetLevel(logrus.DebugLevel)
 	case log.WARN:
-		logrus.SetLevel(logrus.WarnLevel)
+		l.Logger.SetLevel(logrus.WarnLevel)
 	case log.ERROR:
-		logrus.SetLevel(logrus.ErrorLevel)
+		l.Logger.SetLevel(logrus.ErrorLevel)
 	case log.INFO:
-		logrus.SetLevel(logrus.InfoLevel)
+		l.Logger.SetLevel(logrus.InfoLevel)
 	default:
 		l.Panic("Invalid level")
 	}
@@ -64,45 +64,45 @@ func (l Logger) Output() io.Writer {
 
 // SetOutput delegate echo.Logger
 func (l Logger) SetOutput(w io.Writer) {
-	logrus.SetOutput(w)
+	l.Logger.SetOutput(w)
 }
 
 // Printj delegate echo.Logger
 func (l Logger) Printj(j log.JSON) {
-	logrus.WithFields(logrus.Fields(j)).Print()
+	l.Logger.WithFields(logrus.Fields(j)).Print()
 }
 
 // Debugj delegate echo.Logger
 func (l Logger) Debugj(j log.JSON) {
-	logrus.WithFields(logrus.Fields(j)).Debug()
+	l.Logger.WithFields(logrus.Fields(j)).Debug()
 }
 
 // Infoj delegate echo.Logger
 func (l Logger) Infoj(j log.JSON) {
-	logrus.WithFields(logrus.Fields(j)).Info()
+	l.Logger.WithFields(logrus.Fields(j)).Info()
 }
 
 // Warnj delegate echo.Logger
 func (l Logger) Warnj(j log.JSON) {
-	logrus.WithFields(logrus.Fields(j)).Warn()
+	l.Logger.WithFields(logrus.Fields(j)).Warn()
 }
 
 // Errorj delegate echo.Logger
 func (l Logger) Errorj(j log.JSON) {
-	logrus.WithFields(logrus.Fields(j)).Error()
+	l.Logger.WithFields(logrus.Fields(j)).Error()
 }
 
 // Fatalj delegate echo.Logger
 func (l Logger) Fatalj(j log.JSON) {
-	logrus.WithFields(logrus.Fields(j)).Fatal()
+	l.Logger.WithFields(logrus.Fields(j)).Fatal()
 }
 
 // Panicj delegate echo.Logger
 func (l Logger) Panicj(j log.JSON) {
-	logrus.WithFields(logrus.Fields(j)).Panic()
+	l.Logger.WithFields(logrus.Fields(j)).Panic()
 }
 
-func logrusMiddlewareHandler(c echo.Context, next echo.HandlerFunc) error {
+func logrusMiddlewareHandler(l Logger, c echo.Context, next echo.HandlerFunc) error {
 	req := c.Request()
 	res := c.Response()
 	start := time.Now()
@@ -115,7 +115,7 @@ func logrusMiddlewareHandler(c echo.Context, next echo.HandlerFunc) error {
 
 	//bytesIn := req.Header.Get(echo.HeaderContentLength)
 
-	logrus.WithFields(map[string]interface{}{
+	l.Logger.WithFields(map[string]interface{}{
 		//"time_rfc3339": time.Now().Format(time.RFC3339),
 		//"remote_ip":     c.RealIP(),
 		"status": res.Status,
@@ -134,13 +134,13 @@ func logrusMiddlewareHandler(c echo.Context, next echo.HandlerFunc) error {
 	return nil
 }
 
-func logger(next echo.HandlerFunc) echo.HandlerFunc {
+func (l Logger) logger(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return logrusMiddlewareHandler(c, next)
+		return logrusMiddlewareHandler(l, c, next)
 	}
 }
 
 // Hook is a function to process middleware.
-func Hook() echo.MiddlewareFunc {
-	return logger
+func (l Logger) Hook() echo.MiddlewareFunc {
+	return l.logger
 }
