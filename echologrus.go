@@ -116,15 +116,15 @@ func (l Logger) logrusMiddlewareHandler(c echo.Context, next echo.HandlerFunc) e
 	//bytesIn := req.Header.Get(echo.HeaderContentLength)
 
 	l.Logger.WithFields(map[string]interface{}{
-		//"time_rfc3339": time.Now().Format(time.RFC3339),
-		//"remote_ip":     c.RealIP(),
-		"status": res.Status,
-		"host":   req.Host,
+		"@timestamp": time.Now().Format(time.RFC3339),
+		"remote_ip":  c.RealIP(),
+		"status":     res.Status,
+		//"host":   req.Host,
 		//"uri":  req.RequestURI,
-		//"method":        req.Method,
-		"path": p,
-		//"referer":       req.Referer(),
-		//"user_agent":    req.UserAgent(),
+		"method":     req.Method,
+		"path":       p,
+		"referer":    req.Referer(),
+		"user_agent": req.UserAgent(),
 		//"latency":       strconv.FormatInt(stop.Sub(start).Nanoseconds()/1000, 10),
 		"latency": stop.Sub(start).String(),
 		//"bytes_in":      bytesIn,
