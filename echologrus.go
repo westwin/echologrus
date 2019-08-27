@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/sirupsen/logrus"
 )
@@ -12,6 +13,7 @@ import (
 // Logger : implement logrus Logger
 type Logger struct {
 	*logrus.Logger
+	Skipper middleware.Skipper
 }
 
 // Level delegate echo.Logger
@@ -135,7 +137,13 @@ func (l Logger) logrusMiddlewareHandler(c echo.Context, next echo.HandlerFunc) e
 }
 
 func (l Logger) logger(next echo.HandlerFunc) echo.HandlerFunc {
+	if l.Skipper == nil {
+		l.Skipper = middleware.DefaultSkipper
+	}
 	return func(c echo.Context) error {
+		if l.Skipper(c) {
+			return next(c)
+		}
 		return l.logrusMiddlewareHandler(c, next)
 	}
 }
